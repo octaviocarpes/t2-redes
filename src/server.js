@@ -1,7 +1,5 @@
-const dgram = require('dgram');
+import dgram from 'dgram';
 const server = dgram.createSocket('udp4');
-
-const file = require('../data/questions.json');
 
 server.bind(41234);
 
@@ -24,12 +22,12 @@ server.on('message', (msg, rinfo) => {
     console.log(`server got: ${msg} from ${rinfo.address}:${rinfo.port}`);
 
     if (req === 'file')
-        send(file, rinfo);
+        send('file', rinfo);
 
     const [message, offset] = splitMessage(req);
-    
+
     if (message  === 'ack') {
-        send(file, rinfo, offset);
+        send('Message qualquer', rinfo, offset);
         // ack = false;
     }
 });

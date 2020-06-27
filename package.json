@@ -9,5 +9,12 @@
   },
   "prettier": {
     "tabWidth": 4
+  },
+  "scripts": {
+    "start": "concurrently \"nodemon src/client/index.js\" \"nodemon src/server.js\""
+  },
+  "dependencies": {
+    "concurrently": "^5.2.0",
+    "nodemon": "^2.0.4"
   }
 }
