@@ -3,5 +3,11 @@
   "name": "t2-redes",
   "version": "1.0.0",
   "main": "index.js",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "prettier": "^2.0.5"
+  },
+  "prettier": {
+    "tabWidth": 4
+  }
 }
