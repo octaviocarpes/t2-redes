@@ -8,6 +8,7 @@ import {
     sequence,
     updateLastSent,
 } from "./fastRetransmit.js";
+import fs from "fs";
 
 const start = async () => {
     const filePath = "src/temp/picture.png";
@@ -23,8 +24,21 @@ const start = async () => {
         fastRetransmit(ack);
 
         if (ack === lastSent + 1) {
+            console.log(`Sending ${slowStart} packages`);
             for (let i = 0; i < slowStart; i++) {
-                if (lastSent === arrayLength) break;
+                if (lastSent === arrayLength) {
+                    console.log("Deleting temporary files");
+                    for (const path of fileArray) {
+                        fs.unlink(path, (err) => {
+                            if (err) {
+                                console.log("Arquivo já removido");
+                            } else {
+                                console.log("Arquivo removido");
+                            }
+                        });
+                    }
+                    break;
+                }
                 send(
                     fileArray[sequence - 1 + i],
                     socket,

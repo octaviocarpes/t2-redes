@@ -1,4 +1,5 @@
 import crcCreate from "../util/createCrc.js";
+import fs from "fs";
 
 export const send = (array, socket, sequence, total) => {
     const file = fileObject(array, sequence, total);
@@ -7,9 +8,10 @@ export const send = (array, socket, sequence, total) => {
 };
 
 const fileObject = (data, sequence, total) => {
+    const file = fs.readFileSync(data);
     const obj = {
-        data,
-        crc: crcCreate(data),
+        data: file,
+        crc: crcCreate(file),
         sequence: sequence,
         total,
     };
