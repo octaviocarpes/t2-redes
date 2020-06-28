@@ -11,7 +11,7 @@ export const verifyCrc = (msg) => {
 };
 
 export const verifySequence = (msg) => {
-    if (msg.sequence === lastSequence + 1) {
+    if (msg.sequence === lastSequence) {
         lastSequence += 1;
         return true;
     } else {

@@ -17,7 +17,7 @@ const start = async () => {
 
         fastRetransmit(ack);
 
-        if (ack === lastSent) {
+        if (ack === lastSent + 1) {
             for (let i = 0; i < slowStart; i++) {
                 send(
                     fileArray[sequence - 1 + i],

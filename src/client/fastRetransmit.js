@@ -5,7 +5,7 @@ export let lastSent = 1;
 export const fastRetransmit = (ack) => {
     if (ack === sequence + 1) {
         sequence += 1;
-        if (lastSent === ack) {
+        if (lastSent + 1 === ack) {
             slowStart = slowStart * 2;
         }
     } else {
