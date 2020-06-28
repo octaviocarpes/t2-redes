@@ -12,10 +12,14 @@
   },
   "scripts": {
     "start": "concurrently \"nodemon src/client/index.js\" \"nodemon src/server.js\"",
-    "server": "nodemon src/server.js"
+    "server": "nodemon src/server/server.js",
+    "client": "nodemon src/client/client.js"
   },
   "dependencies": {
     "concurrently": "^5.2.0",
-    "nodemon": "^2.0.4"
+    "crc": "^3.8.0",
+    "get-stream": "^5.1.0",
+    "nodemon": "^2.0.4",
+    "split-file": "^2.2.1"
   }
 }
