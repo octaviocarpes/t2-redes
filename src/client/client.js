@@ -24,6 +24,7 @@ const start = async () => {
 
         if (ack === lastSent + 1) {
             for (let i = 0; i < slowStart; i++) {
+                if (lastSent === arrayLength) break;
                 send(
                     fileArray[sequence - 1 + i],
                     socket,

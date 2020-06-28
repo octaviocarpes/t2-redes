@@ -11,7 +11,7 @@
     "tabWidth": 4
   },
   "scripts": {
-    "start": "concurrently \"nodemon src/client/index.js\" \"nodemon src/server.js\"",
+    "start": "concurrently \"nodemon src/client/client.js\" \"nodemon src/server/server.js\"",
     "server": "nodemon src/server/server.js",
     "client": "nodemon src/client/client.js"
   },
