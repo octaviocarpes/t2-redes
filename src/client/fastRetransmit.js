@@ -13,3 +13,7 @@ export const fastRetransmit = (ack) => {
         sequence = ack;
     }
 };
+
+export const updateLastSent = () => {
+    lastSent++;
+};

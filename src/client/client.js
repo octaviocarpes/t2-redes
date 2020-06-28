@@ -2,7 +2,12 @@ import { readFile } from "../util/manageFile.js";
 import socket, { connect } from "./api.js";
 import { send } from "./socket.js";
 import { slowStart } from "./fastRetransmit.js";
-import { fastRetransmit, lastSent, sequence } from "./fastRetransmit.js";
+import {
+    fastRetransmit,
+    lastSent,
+    sequence,
+    updateLastSent,
+} from "./fastRetransmit.js";
 
 const start = async () => {
     const filePath = "src/temp/picture.png";
@@ -25,7 +30,7 @@ const start = async () => {
                     sequence + i,
                     arrayLength
                 );
-                lastSent += 1;
+                updateLastSent();
             }
         }
     });
