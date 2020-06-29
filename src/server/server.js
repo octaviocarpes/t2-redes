@@ -84,6 +84,7 @@ server.on("message", async (msg, rinfo) => {
 });
 
 async function send(message, rinfo) {
+    console.log(`Sending ack ${lastSequence}`);
     return new Promise((resolve, reject) =>
         server.send(
             message,
