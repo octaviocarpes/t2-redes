@@ -10,7 +10,7 @@ import {
 } from "./fastRetransmit.js";
 import fs from "fs";
 
-let foo = [1, 2];
+let foo = [1];
 
 const start = async () => {
     const filePath = "src/temp/picture.png";
@@ -21,10 +21,9 @@ const start = async () => {
 
     socket.on("message", (msg) => {
         const parsedMsg = `${msg}`;
-        const ack = Number(parsedMsg.split("-")[1]); // 2
+        const ack = Number(parsedMsg.split("-")[1]);
 
         if (foo[foo.length - 1] < ack && !foo.includes(ack)) {
-            
             foo.push(ack);
 
             fastRetransmit(ack);
@@ -52,14 +51,9 @@ const start = async () => {
                     );
                     updateLastSent();
                 }
-            } 
+            }
         } else {
-            send(
-                fileArray[sequence - 1 + i],
-                socket,
-                sequence + i,
-                arrayLength
-            );
+            send(fileArray[sequence - 1], socket, sequence, arrayLength);
         }
     });
 };
