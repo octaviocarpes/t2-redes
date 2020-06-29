@@ -75,7 +75,7 @@ server.on("message", async (msg, rinfo) => {
 
     if (parsedMsg.sequence === parsedMsg.total) {
         console.log("Merging packets...");
-        await splitFile.mergeFiles(file, "src/server/destination/picture1.png");
+        await splitFile.mergeFiles(file, "src/server/destination/picture.png");
         console.log("Deleting temporary files");
         for (const path of file) {
             fs.unlinkSync(path);
