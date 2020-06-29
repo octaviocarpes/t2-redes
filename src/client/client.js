@@ -27,7 +27,8 @@ const start = async () => {
                 return;
             }
             resetSlowStart();
-            send(fileArray[ack - 1], socket, ack, arrayLength);
+            console.log(`Reseting packets due to loss`);
+            send(fileArray[receivedAck - 1], socket, receivedAck, arrayLength);
             lastSent = ack;
             listOfAcks = [];
             return;
