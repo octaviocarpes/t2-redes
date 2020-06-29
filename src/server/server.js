@@ -7,8 +7,6 @@ import fs from "fs";
 const server = socket;
 let file = [];
 
-let resending = false;
-
 const EXEC_SHA = "shasum -a 256 src/temp/picture.png";
 const VERIFY_SHA = "openssl sha256 src/temp/picture.png";
 
@@ -28,6 +26,9 @@ const executeShellCommand = (command) => {
 
 server.bind(41234);
 
+// timeout
+let t;
+
 // Prints: server listening 0.0.0.0:41234
 server.on("listening", () => {
     const local = server.address();
@@ -40,7 +41,7 @@ server.on("error", (err) => {
 });
 
 server.on("message", async (msg, rinfo) => {
-    resending = false;
+    stopTimeout();
 
     let parsedMsg = JSON.parse(`${msg}`);
 
@@ -51,12 +52,14 @@ server.on("message", async (msg, rinfo) => {
     if (verifyCrc(parsedMsg) !== true) {
         const lastSequence = verifyCrc(parsedMsg);
         await send(`ack-${lastSequence}`, rinfo);
+        callInterval(rinfo, lastSequence);
         return;
     }
 
     if (verifySequence(parsedMsg) !== true) {
         const lastSequence = verifySequence(parsedMsg);
         await send(`ack-${lastSequence}`, rinfo);
+        callInterval(rinfo, lastSequence);
         return;
     }
 
@@ -86,8 +89,8 @@ server.on("message", async (msg, rinfo) => {
     }
 
     await send(`ack-${lastSequence}`, rinfo);
-    resending = true;
-    // await resend(lastSequence, rinfo);
+
+    callInterval(rinfo, lastSequence);
 });
 
 async function send(message, rinfo) {
@@ -110,15 +113,25 @@ async function send(message, rinfo) {
     );
 }
 
-const resend = async (ack, rinfo) => {
-    while (resending) {
-        await sleep();
-        if (resending) {
-            await send(`ack-${ack}`, rinfo);
-        }
-    }
+const startTimeout = (timer, func) => {
+    t = setInterval(func, timer);
 };
 
-const sleep = () => {
-    return new Promise((resolve) => setTimeout(() => resolve(), 2000));
+const stopTimeout = () => {
+    clearInterval(t);
+};
+
+const callInterval = (rinfo, lastSequence) => {
+    startTimeout(2000, () =>
+        server.send(
+            `ack-${lastSequence}`,
+            0,
+            `ack-${lastSequence}`.length,
+            rinfo.port,
+            rinfo.address,
+            () => {
+                console.log(`Resending ack ${lastSequence}`);
+            }
+        )
+    );
 };
