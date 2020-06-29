@@ -3,7 +3,7 @@ import fs from "fs";
 
 export const send = (array, socket, sequence, total) => {
     const file = fileObject(array, sequence, total);
-    console.log(`Sending ${file}`);
+    console.log(`Sending sequence ${sequence} of ${total}`);
     socket.send(file, 0, lengthInUtf8Bytes(file));
 };
 

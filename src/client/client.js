@@ -31,7 +31,6 @@ const start = async () => {
                     for (const path of fileArray) {
                         fs.unlink(path, (err) => {
                             if (err) {
-                                console.log("Arquivo já removido");
                             } else {
                                 console.log("Arquivo removido");
                             }
