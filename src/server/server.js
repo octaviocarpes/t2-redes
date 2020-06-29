@@ -122,7 +122,7 @@ const stopTimeout = () => {
 };
 
 const callInterval = (rinfo, lastSequence) => {
-    startTimeout(2000, () =>
+    startTimeout(200, () =>
         server.send(
             `ack-${lastSequence}`,
             0,

@@ -8,14 +8,16 @@ export const send = (array, socket, sequence, total) => {
 };
 
 const fileObject = (data, sequence, total) => {
-    const file = fs.readFileSync(data);
-    const obj = {
-        data: file,
-        crc: crcCreate(file),
-        sequence: sequence,
-        total,
-    };
-    return JSON.stringify(obj);
+    try {
+        const file = fs.readFileSync(data);
+        const obj = {
+            data: file,
+            crc: crcCreate(file),
+            sequence: sequence,
+            total,
+        };
+        return JSON.stringify(obj);
+    } catch (e) {}
 };
 
 function lengthInUtf8Bytes(str) {
