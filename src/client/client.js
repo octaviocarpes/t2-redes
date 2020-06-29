@@ -10,6 +10,8 @@ import {
 } from "./fastRetransmit.js";
 import fs from "fs";
 
+let foo = [1, 2];
+
 const start = async () => {
     const filePath = "src/temp/picture.png";
     const fileArray = await readFile(filePath);
@@ -19,33 +21,45 @@ const start = async () => {
 
     socket.on("message", (msg) => {
         const parsedMsg = `${msg}`;
-        const ack = Number(parsedMsg.split("-")[1]);
+        const ack = Number(parsedMsg.split("-")[1]); // 2
 
-        fastRetransmit(ack);
+        if (foo[foo.length - 1] < ack && !foo.includes(ack)) {
+            
+            foo.push(ack);
 
-        if (ack === lastSent + 1) {
-            console.log(`Sending ${slowStart} packages`);
-            for (let i = 0; i < slowStart; i++) {
-                if (lastSent === arrayLength) {
-                    console.log("Deleting temporary files");
-                    for (const path of fileArray) {
-                        fs.unlink(path, (err) => {
-                            if (err) {
-                            } else {
-                                console.log("Arquivo removido");
-                            }
-                        });
+            fastRetransmit(ack);
+
+            if (ack === lastSent + 1) {
+                console.log(`Sending ${slowStart} packages`);
+                for (let i = 0; i < slowStart; i++) {
+                    if (lastSent === arrayLength) {
+                        console.log("Deleting temporary files");
+                        for (const path of fileArray) {
+                            fs.unlink(path, (err) => {
+                                if (err) {
+                                } else {
+                                    console.log("Arquivo removido");
+                                }
+                            });
+                        }
+                        break;
                     }
-                    break;
+                    send(
+                        fileArray[sequence - 1 + i],
+                        socket,
+                        sequence + i,
+                        arrayLength
+                    );
+                    updateLastSent();
                 }
-                send(
-                    fileArray[sequence - 1 + i],
-                    socket,
-                    sequence + i,
-                    arrayLength
-                );
-                updateLastSent();
-            }
+            } 
+        } else {
+            send(
+                fileArray[sequence - 1 + i],
+                socket,
+                sequence + i,
+                arrayLength
+            );
         }
     });
 };
