@@ -13,6 +13,7 @@ const start = async () => {
     const arrayLength = fileArray.length;
     send(fileArray[0], socket, 1, arrayLength);
     lastSent = 1;
+    let listOfAcks = [];
 
     socket.on("message", async (msg) => {
         const parsedMsg = `${msg}`;
@@ -20,12 +21,15 @@ const start = async () => {
 
         // fast retransmit
         if (ack === receivedAck) {
-            socket.disconnect();
-            resetSlowStart();
+            listOfAcks.push(ack);
             await sleep();
-            await connect();
+            if (listOfAcks.length === 0) {
+                return;
+            }
+            resetSlowStart();
             send(fileArray[ack - 1], socket, ack, arrayLength);
             lastSent = ack;
+            listOfAcks = [];
             return;
         }
 
@@ -47,7 +51,7 @@ const start = async () => {
 
 const sleep = () => {
     return new Promise((resolve) => {
-        setTimeout(() => resolve(), 2000);
+        setTimeout(() => resolve(), 500);
     });
 };
 

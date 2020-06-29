@@ -11,6 +11,7 @@ export const slowStart = ({
     arrayLength,
     lastSent,
 }) => {
+    console.log(`Sending ${slowStartSequence} packets simultaneously`);
     for (let i = 0; i < slowStartSequence; i++) {
         if (lastSent === arrayLength) {
             break;
