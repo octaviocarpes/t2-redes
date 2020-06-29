@@ -11,6 +11,7 @@ import {
 import fs from "fs";
 
 let foo = [1];
+let retransmitted = false;
 
 const start = async () => {
     const filePath = "src/temp/picture.png";
@@ -25,6 +26,7 @@ const start = async () => {
 
         if (foo[foo.length - 1] < ack && !foo.includes(ack)) {
             foo.push(ack);
+            retransmitted = false;
 
             fastRetransmit(ack);
 
@@ -53,7 +55,10 @@ const start = async () => {
                 }
             }
         } else {
-            send(fileArray[sequence - 1], socket, sequence, arrayLength);
+            if (!retransmitted) {
+                send(fileArray[sequence - 1], socket, sequence, arrayLength);
+                retransmitted = true;
+            }
         }
     });
 };
