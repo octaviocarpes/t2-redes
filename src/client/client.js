@@ -21,7 +21,7 @@ const start = async () => {
         const parsedMsg = `${msg}`;
         const ack = Number(parsedMsg.split("-")[1]);
 
-        fastRetransmit(ack);
+        fastRetransmit(ack, fileArray, socket, arrayLength);
 
         if (ack === lastSent + 1) {
             console.log(`Sending ${slowStart} packages`);
@@ -44,7 +44,7 @@ const start = async () => {
                     sequence + i,
                     arrayLength
                 );
-                updateLastSent();
+                updateLastSent(lastSent + 1);
             }
         }
     });
