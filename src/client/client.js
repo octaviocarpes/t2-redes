@@ -20,10 +20,12 @@ const start = async () => {
 
         // fast retransmit
         if (ack === receivedAck) {
-            socket.close();
+            socket.disconnect();
             resetSlowStart();
             await sleep();
+            await connect();
             send(fileArray[ack - 1], socket, ack, arrayLength);
+            lastSent = ack;
             return;
         }
 

@@ -78,6 +78,7 @@ server.on("message", async (msg, rinfo) => {
         executeShellCommand(EXEC_SHA);
         console.log("Validating file with openssl...");
         executeShellCommand(VERIFY_SHA);
+        return;
     }
 
     await send(`ack-${lastSequence}`, rinfo);
