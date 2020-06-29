@@ -58,6 +58,11 @@ const start = async () => {
             if (!retransmitted) {
                 send(fileArray[sequence - 1], socket, sequence, arrayLength);
                 retransmitted = true;
+            } else {
+                /* 
+                    Se der merda de novo?
+                    Recomeçar o processo?
+                */
             }
         }
     });
