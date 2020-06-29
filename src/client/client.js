@@ -1,17 +1,10 @@
 import { readFile } from "../util/manageFile.js";
 import socket, { connect } from "./api.js";
 import { send } from "./socket.js";
-import { slowStart } from "./fastRetransmit.js";
-import {
-    fastRetransmit,
-    lastSent,
-    sequence,
-    updateLastSent,
-} from "./fastRetransmit.js";
-import fs from "fs";
+import { slowStart, resetSlowStart } from "./slowStart.js";
 
-let foo = [1];
-let retransmitted = false;
+let receivedAck = 0;
+let lastSent = 0;
 
 const start = async () => {
     const filePath = "src/temp/picture.png";
@@ -19,53 +12,45 @@ const start = async () => {
     await connect();
     const arrayLength = fileArray.length;
     send(fileArray[0], socket, 1, arrayLength);
+    lastSent = 1;
 
-    socket.on("message", (msg) => {
+    socket.on("message", async (msg) => {
         const parsedMsg = `${msg}`;
         const ack = Number(parsedMsg.split("-")[1]);
 
-        if (foo[foo.length - 1] < ack && !foo.includes(ack)) {
-            foo.push(ack);
-            retransmitted = false;
+        // fast retransmit
+        if (ack === receivedAck) {
+            socket.close();
+            resetSlowStart();
+            await sleep();
+            send(fileArray[ack - 1], socket, ack, arrayLength);
+            return;
+        }
 
-            fastRetransmit(ack);
+        receivedAck = ack;
 
-            if (ack === lastSent + 1) {
-                console.log(`Sending ${slowStart} packages`);
-                for (let i = 0; i < slowStart; i++) {
-                    if (lastSent === arrayLength) {
-                        console.log("Deleting temporary files");
-                        for (const path of fileArray) {
-                            fs.unlink(path, (err) => {
-                                if (err) {
-                                } else {
-                                    console.log("Arquivo removido");
-                                }
-                            });
-                        }
-                        break;
-                    }
-                    send(
-                        fileArray[sequence - 1 + i],
-                        socket,
-                        sequence + i,
-                        arrayLength
-                    );
-                    updateLastSent();
-                }
-            }
-        } else {
-            if (!retransmitted) {
-                send(fileArray[sequence - 1], socket, sequence, arrayLength);
-                retransmitted = true;
-            } else {
-                /* 
-                    Se der merda de novo?
-                    Recomeçar o processo?
-                */
-            }
+        // slow start
+        if (ack === lastSent + 1) {
+            slowStart({
+                send,
+                fileArray,
+                socket,
+                sequence: lastSent + 1,
+                arrayLength,
+                lastSent,
+            });
         }
     });
+};
+
+const sleep = () => {
+    return new Promise((resolve) => {
+        setTimeout(() => resolve(), 2000);
+    });
+};
+
+export const increaseLastSent = () => {
+    lastSent++;
 };
 
 start();
