@@ -7,6 +7,8 @@ import fs from "fs";
 const server = socket;
 let file = [];
 
+let resending = false;
+
 const EXEC_SHA = "shasum -a 256 src/temp/picture.png";
 const VERIFY_SHA = "openssl sha256 src/temp/picture.png";
 
@@ -38,6 +40,8 @@ server.on("error", (err) => {
 });
 
 server.on("message", async (msg, rinfo) => {
+    resending = false;
+
     let parsedMsg = JSON.parse(`${msg}`);
 
     console.log(
@@ -82,6 +86,8 @@ server.on("message", async (msg, rinfo) => {
     }
 
     await send(`ack-${lastSequence}`, rinfo);
+    resending = true;
+    // await resend(lastSequence, rinfo);
 });
 
 async function send(message, rinfo) {
@@ -103,3 +109,16 @@ async function send(message, rinfo) {
         )
     );
 }
+
+const resend = async (ack, rinfo) => {
+    while (resending) {
+        await sleep();
+        if (resending) {
+            await send(`ack-${ack}`, rinfo);
+        }
+    }
+};
+
+const sleep = () => {
+    return new Promise((resolve) => setTimeout(() => resolve(), 2000));
+};
